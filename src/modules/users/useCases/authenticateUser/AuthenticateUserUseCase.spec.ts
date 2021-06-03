@@ -1,7 +1,5 @@
-//import { hash } from "bcryptjs";
 import { hash } from "bcryptjs";
 import { InMemoryUsersRepository } from "../../repositories/in-memory/InMemoryUsersRepository";
-import { ICreateUserDTO } from "../createUser/ICreateUserDTO";
 import { AuthenticateUserUseCase } from "./AuthenticateUserUseCase";
 import { IncorrectEmailOrPasswordError } from "./IncorrectEmailOrPasswordError";
 
