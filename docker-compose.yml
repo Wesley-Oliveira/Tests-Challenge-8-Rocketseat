@@ -4,6 +4,7 @@ services:
   fin_api:
     image: postgres
     container_name: fin_api
+    restart: always
     ports:
       - 5432:5432
     environment:
