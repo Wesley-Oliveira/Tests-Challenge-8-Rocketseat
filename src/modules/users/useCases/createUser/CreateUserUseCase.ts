@@ -5,15 +5,16 @@ import { CreateUserError } from "./CreateUserError";
 
 import { IUsersRepository } from "../../repositories/IUsersRepository";
 import { ICreateUserDTO } from "./ICreateUserDTO";
+import { User } from "../../entities/User";
 
 @injectable()
-export class CreateUserUseCase {
+class CreateUserUseCase {
   constructor(
     @inject('UsersRepository')
     private usersRepository: IUsersRepository,
   ) {}
 
-  async execute({ name, email, password }: ICreateUserDTO) {
+  async execute({ name, email, password }: ICreateUserDTO): Promise<User> {
     const userAlreadyExists = await this.usersRepository.findByEmail(email);
 
     if (userAlreadyExists) {
@@ -31,3 +32,5 @@ export class CreateUserUseCase {
     return user;
   }
 }
+
+export { CreateUserUseCase }

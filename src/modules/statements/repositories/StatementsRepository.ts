@@ -15,18 +15,33 @@ export class StatementsRepository implements IStatementsRepository {
 
   async create({
     user_id,
+    sender_id,
     amount,
     description,
-    type
+    type,
+    destiny_id
   }: ICreateStatementDTO): Promise<Statement> {
-    const statement = this.repository.create({
-      user_id,
-      amount,
-      description,
-      type
-    });
+    let statement;
+    if (type === 'transfer') {
+        statement = this.repository.create({
+            user_id,
+            sender_id,
+            amount,
+            description,
+            type,
+            destiny_id
+        });
+    }
+    else {
+        statement = this.repository.create({
+            user_id,
+            amount,
+            description,
+            type
+        });
+    }
 
-    return this.repository.save(statement);
+    return await this.repository.save(statement);
   }
 
   async findStatementOperation({ statement_id, user_id }: IGetStatementOperationDTO): Promise<Statement | undefined> {
@@ -40,15 +55,19 @@ export class StatementsRepository implements IStatementsRepository {
       { balance: number } | { balance: number, statement: Statement[] }
     >
   {
-    const statement = await this.repository.find({
-      where: { user_id }
-    });
-
+    const statement = await this.repository.find({where: [{ user_id }, {destiny_id: user_id}]});
     const balance = statement.reduce((acc, operation) => {
       if (operation.type === 'deposit') {
-        return acc + operation.amount;
-      } else {
-        return acc - operation.amount;
+        return acc + Number(operation.amount);
+      }
+      else if (operation.type === 'transfer')  {
+        if (user_id === operation.destiny_id) {
+            return acc + Number(operation.amount);
+        }
+        return acc - Number(operation.amount);
+      }
+      else {
+        return acc - Number(operation.amount);
       }
     }, 0)
 
